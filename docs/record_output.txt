@@ -1,0 +1,2 @@
+recorded 500 scans to /tmp/radar_out2/session.scanlog
+informational track-history hash: ac8123fadcc873b531f65bdcef607539907fc10cc75b44226183c77ccdb8183a

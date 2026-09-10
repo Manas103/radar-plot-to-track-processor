@@ -1,0 +1,7 @@
+num_targets=500 num_scans=10000
+min_ms=0.305489
+mean_ms=2.78451
+p50_ms=2.68956
+p99_ms=3.79024
+WORST_CASE_MS=6.47295
+missed_deadlines_at_1000ms=0

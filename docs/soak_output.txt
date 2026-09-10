@@ -1,0 +1,6 @@
+SOAK_DISCLOSURE: measured via an injectable virtual clock, not 6 real hours. VirtualClock advanced 21600 logical 1.0s scan intervals with 0 real sleep between scans; every scan's process_scan() duration below was measured against std::chrono::steady_clock (real CPU time) and checked against the 1.0s-equivalent deadline budget.
+num_targets=500
+scans_processed=21600
+MISSED_DEADLINES=0
+max_latency_ms=4.99833
+real_wall_clock_elapsed_s=60.2763

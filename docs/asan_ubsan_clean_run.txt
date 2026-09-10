@@ -1,0 +1,102 @@
+Running main() from /home/manas/build/radar-plot-to-track-processor/build-asan/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 32 tests from 8 test suites.
+[----------] Global test environment set-up.
+[----------] 4 tests from Linalg
+[ RUN      ] Linalg.Mat4IdentityMultiplyIsNoOp
+[       OK ] Linalg.Mat4IdentityMultiplyIsNoOp (0 ms)
+[ RUN      ] Linalg.Mat4TransposeTwiceIsIdentity
+[       OK ] Linalg.Mat4TransposeTwiceIsIdentity (0 ms)
+[ RUN      ] Linalg.Mat2InverseRoundTrip
+[       OK ] Linalg.Mat2InverseRoundTrip (0 ms)
+[ RUN      ] Linalg.Mat4AddIsElementwise
+[       OK ] Linalg.Mat4AddIsElementwise (0 ms)
+[----------] 4 tests from Linalg (0 ms total)
+
+[----------] 5 tests from Kalman
+[ RUN      ] Kalman.PredictOnlyPropagatesConstantVelocity
+[       OK ] Kalman.PredictOnlyPropagatesConstantVelocity (0 ms)
+[ RUN      ] Kalman.PredictGrowsCovariance
+[       OK ] Kalman.PredictGrowsCovariance (0 ms)
+[ RUN      ] Kalman.UpdateShrinksCovariance
+[       OK ] Kalman.UpdateShrinksCovariance (0 ms)
+[ RUN      ] Kalman.ConvergesOnStationaryTargetAndCovarianceStaysBounded
+[       OK ] Kalman.ConvergesOnStationaryTargetAndCovarianceStaysBounded (0 ms)
+[ RUN      ] Kalman.InnovationIsZeroWhenMeasurementMatchesPrediction
+[       OK ] Kalman.InnovationIsZeroWhenMeasurementMatchesPrediction (0 ms)
+[----------] 5 tests from Kalman (0 ms total)
+
+[----------] 3 tests from Gating
+[ RUN      ] Gating.AcceptsInsideThreshold
+[       OK ] Gating.AcceptsInsideThreshold (0 ms)
+[ RUN      ] Gating.RejectsAtOrAboveThreshold
+[       OK ] Gating.RejectsAtOrAboveThreshold (0 ms)
+[ RUN      ] Gating.CustomThresholdIsRespected
+[       OK ] Gating.CustomThresholdIsRespected (0 ms)
+[----------] 3 tests from Gating (0 ms total)
+
+[----------] 3 tests from Hungarian
+[ RUN      ] Hungarian.KnownThreeByThreeOptimalIsFive
+[       OK ] Hungarian.KnownThreeByThreeOptimalIsFive (0 ms)
+[ RUN      ] Hungarian.RectangularMoreColumnsThanRows
+[       OK ] Hungarian.RectangularMoreColumnsThanRows (0 ms)
+[ RUN      ] Hungarian.RectangularMoreRowsThanColumns
+[       OK ] Hungarian.RectangularMoreRowsThanColumns (0 ms)
+[----------] 3 tests from Hungarian (0 ms total)
+
+[----------] 4 tests from GatedAssignment
+[ RUN      ] GatedAssignment.OptimalBeatsGreedyNearest
+[       OK ] GatedAssignment.OptimalBeatsGreedyNearest (0 ms)
+[ RUN      ] GatedAssignment.DisjointComponentsSolvedIndependently
+[       OK ] GatedAssignment.DisjointComponentsSolvedIndependently (0 ms)
+[ RUN      ] GatedAssignment.NoEdgesProducesNoAssociations
+[       OK ] GatedAssignment.NoEdgesProducesNoAssociations (0 ms)
+[ RUN      ] GatedAssignment.NoDuplicateTrackOrDetectionInResult
+[       OK ] GatedAssignment.NoDuplicateTrackOrDetectionInResult (0 ms)
+[----------] 4 tests from GatedAssignment (0 ms total)
+
+[----------] 3 tests from SpscRing
+[ RUN      ] SpscRing.PushPopSingleThreadedFifoOrder
+[       OK ] SpscRing.PushPopSingleThreadedFifoOrder (0 ms)
+[ RUN      ] SpscRing.FullRingRejectsPush
+[       OK ] SpscRing.FullRingRejectsPush (0 ms)
+[ RUN      ] SpscRing.ConcurrentProducerConsumerPreservesOrderAndCompleteness
+[       OK ] SpscRing.ConcurrentProducerConsumerPreservesOrderAndCompleteness (5 ms)
+[----------] 3 tests from SpscRing (5 ms total)
+
+[----------] 6 tests from Tracker
+[ RUN      ] Tracker.ScanCountConservation
+[       OK ] Tracker.ScanCountConservation (0 ms)
+[ RUN      ] Tracker.NoDuplicateTrackIds
+[       OK ] Tracker.NoDuplicateTrackIds (0 ms)
+[ RUN      ] Tracker.ConfirmsAfterMOfNHits
+[       OK ] Tracker.ConfirmsAfterMOfNHits (0 ms)
+[ RUN      ] Tracker.DeletesConfirmedTrackAfterConsecutiveMisses
+[       OK ] Tracker.DeletesConfirmedTrackAfterConsecutiveMisses (0 ms)
+[ RUN      ] Tracker.GateActuallyRejectsFarDetection
+[       OK ] Tracker.GateActuallyRejectsFarDetection (0 ms)
+[ RUN      ] Tracker.TentativeTrackNeverConfirmedIsDroppedNotLeftLingering
+[       OK ] Tracker.TentativeTrackNeverConfirmedIsDroppedNotLeftLingering (0 ms)
+[----------] 6 tests from Tracker (2 ms total)
+
+[----------] 4 tests from Replay
+[ RUN      ] Replay.WriteReadRoundTripExactValues
+[       OK ] Replay.WriteReadRoundTripExactValues (0 ms)
+[ RUN      ] Replay.MultipleScansReadInOrder
+[       OK ] Replay.MultipleScansReadInOrder (0 ms)
+[ RUN      ] Replay.EmptyStreamReturnsFalse
+[       OK ] Replay.EmptyStreamReturnsFalse (0 ms)
+[ RUN      ] Replay.CanonicalLineListsSortedConfirmedIdsOnly
+[       OK ] Replay.CanonicalLineListsSortedConfirmedIdsOnly (0 ms)
+[----------] 4 tests from Replay (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 32 tests from 8 test suites ran. (11 ms total)
+[  PASSED  ] 32 tests.
+--- radar_cli latency-bench under ASan+UBSan (small run) ---
+num_targets=200 num_scans=500
+min_ms=1.03199
+mean_ms=10.6384
+p50_ms=10.1798
+p99_ms=18.4271
+WORST_CASE_MS=21.9793
+missed_deadlines_at_1000ms=0

@@ -1,0 +1,38 @@
+# Build outputs. Regenerate with:
+#   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j2
+build/
+build-*/
+out/
+*.o
+*.obj
+*.exe
+*.a
+*.so
+*.dylib
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+
+# GoogleTest is fetched by CMake FetchContent at configure time, never
+# vendored. Regenerates automatically on the next `cmake -S . -B build`.
+_deps/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# Recorded scan logs and scenario batches are large, regenerable simulation
+# output, not source. Regenerate with:
+#   ./build/radar_cli record docs_data/session.log <num_scans>
+#   python3 python_reference/generate_scenarios.py --out scenarios/
+*.scanlog
+scenarios/
+docs_data/

@@ -1,0 +1,2 @@
+ORACLE_COMPARISON: 120 of 120 scenarios agreed with the independent Python reference tracker on track count and identity per scan
+scenario target counts: 3-8, scan lengths: 15-25, seeds: 1000..1119

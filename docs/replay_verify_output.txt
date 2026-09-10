@@ -1,0 +1,6 @@
+verify-replay: two independent runs over /tmp/radar_out2/session.scanlog
+  run processed 500 scans, hash ac8123fadcc873b531f65bdcef607539907fc10cc75b44226183c77ccdb8183a
+  run processed 500 scans, hash ac8123fadcc873b531f65bdcef607539907fc10cc75b44226183c77ccdb8183a
+hash_1=ac8123fadcc873b531f65bdcef607539907fc10cc75b44226183c77ccdb8183a
+hash_2=ac8123fadcc873b531f65bdcef607539907fc10cc75b44226183c77ccdb8183a
+REPLAY_BIT_FOR_BIT=PASS
