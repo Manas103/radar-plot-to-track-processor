@@ -36,3 +36,8 @@ venv/
 *.scanlog
 scenarios/
 docs_data/
+
+# Loaded SQLite databases are regenerable from docs/sample_events.tsv (or
+# any autolabel_cli mine output). Regenerate with:
+#   python3 python_reference/events_to_sqlite.py docs/sample_events.tsv docs/sample_events.sqlite3
+*.sqlite3

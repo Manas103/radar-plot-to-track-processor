@@ -1,0 +1,167 @@
+=== autolabel_tests (TSan, setarch -R) ===
+Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Application process flow/projects/radar-plot-to-track-processor/build-tsan/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 24 tests from 3 test suites.
+[----------] Global test environment set-up.
+[----------] 16 tests from Predicates
+[ RUN      ] Predicates.LaneChangeFiresOnScriptedShift
+[       OK ] Predicates.LaneChangeFiresOnScriptedShift (0 ms)
+[ RUN      ] Predicates.LaneChangeDoesNotFireOnStraightCruise
+[       OK ] Predicates.LaneChangeDoesNotFireOnStraightCruise (0 ms)
+[ RUN      ] Predicates.HardBrakeFiresOnDecelPulse
+[       OK ] Predicates.HardBrakeFiresOnDecelPulse (0 ms)
+[ RUN      ] Predicates.HighAccelerationFiresOnAccelPulse
+[       OK ] Predicates.HighAccelerationFiresOnAccelPulse (0 ms)
+[ RUN      ] Predicates.HardBrakeAndHighAccelAreMutuallyExclusiveOnCruise
+[       OK ] Predicates.HardBrakeAndHighAccelAreMutuallyExclusiveOnCruise (0 ms)
+[ RUN      ] Predicates.CloseProximityFiresWhenAgentsStaySub6m
+[       OK ] Predicates.CloseProximityFiresWhenAgentsStaySub6m (0 ms)
+[ RUN      ] Predicates.CloseProximityDoesNotFireWhenFar
+[       OK ] Predicates.CloseProximityDoesNotFireWhenFar (0 ms)
+[ RUN      ] Predicates.CrossingPathsFiresOnPerpendicularApproach
+[       OK ] Predicates.CrossingPathsFiresOnPerpendicularApproach (0 ms)
+[ RUN      ] Predicates.CrossingPathsDoesNotFireOnParallelTraffic
+[       OK ] Predicates.CrossingPathsDoesNotFireOnParallelTraffic (0 ms)
+[ RUN      ] Predicates.UnprotectedLeftFiresWhenTurningAgentCrossesOncomingTraffic
+[       OK ] Predicates.UnprotectedLeftFiresWhenTurningAgentCrossesOncomingTraffic (0 ms)
+[ RUN      ] Predicates.CutInFiresWhenAgentShiftsJustAheadOfFollower
+[       OK ] Predicates.CutInFiresWhenAgentShiftsJustAheadOfFollower (0 ms)
+[ RUN      ] Predicates.CutInDoesNotFireWithoutALaneShift
+[       OK ] Predicates.CutInDoesNotFireWithoutALaneShift (0 ms)
+[ RUN      ] Predicates.MergeFiresInsideDeclaredZone
+[       OK ] Predicates.MergeFiresInsideDeclaredZone (0 ms)
+[ RUN      ] Predicates.MergeDoesNotFireOutsideDeclaredZone
+[       OK ] Predicates.MergeDoesNotFireOutsideDeclaredZone (0 ms)
+[ RUN      ] Predicates.CyclistVehicleCloseApproachFiresOnTightPass
+[       OK ] Predicates.CyclistVehicleCloseApproachFiresOnTightPass (0 ms)
+[ RUN      ] Predicates.CyclistVehicleCloseApproachRequiresOneOfEachType
+[       OK ] Predicates.CyclistVehicleCloseApproachRequiresOneOfEachType (0 ms)
+[----------] 16 tests from Predicates (4 ms total)
+
+[----------] 4 tests from Prefilter
+[ RUN      ] Prefilter.SameCellIsAdjacent
+[       OK ] Prefilter.SameCellIsAdjacent (0 ms)
+[ RUN      ] Prefilter.NeighborCellIsAdjacent
+[       OK ] Prefilter.NeighborCellIsAdjacent (0 ms)
+[ RUN      ] Prefilter.FarCellIsNotAdjacent
+[       OK ] Prefilter.FarCellIsNotAdjacent (0 ms)
+[ RUN      ] Prefilter.NegativeCoordinatesHandledConsistently
+[       OK ] Prefilter.NegativeCoordinatesHandledConsistently (0 ms)
+[----------] 4 tests from Prefilter (1 ms total)
+
+[----------] 4 tests from Miner
+[ RUN      ] Miner.PairsScannedMatchesCombinatorialCount
+[       OK ] Miner.PairsScannedMatchesCombinatorialCount (3 ms)
+[ RUN      ] Miner.ThreadCountDoesNotChangeScanCount
+[       OK ] Miner.ThreadCountDoesNotChangeScanCount (15 ms)
+[ RUN      ] Miner.ValidationCorpusFindsEveryEventClass
+[       OK ] Miner.ValidationCorpusFindsEveryEventClass (58 ms)
+[ RUN      ] Miner.TwoRunsOverSameCorpusProduceIdenticalEvents
+[       OK ] Miner.TwoRunsOverSameCorpusProduceIdenticalEvents (184 ms)
+[----------] 4 tests from Miner (263 ms total)
+
+[----------] Global test environment tear-down
+[==========] 24 tests from 3 test suites ran. (271 ms total)
+[  PASSED  ] 24 tests.
+=== radar_tests (TSan, setarch -R) ===
+Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Application process flow/projects/radar-plot-to-track-processor/build-tsan/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 32 tests from 8 test suites.
+[----------] Global test environment set-up.
+[----------] 4 tests from Linalg
+[ RUN      ] Linalg.Mat4IdentityMultiplyIsNoOp
+[       OK ] Linalg.Mat4IdentityMultiplyIsNoOp (0 ms)
+[ RUN      ] Linalg.Mat4TransposeTwiceIsIdentity
+[       OK ] Linalg.Mat4TransposeTwiceIsIdentity (0 ms)
+[ RUN      ] Linalg.Mat2InverseRoundTrip
+[       OK ] Linalg.Mat2InverseRoundTrip (0 ms)
+[ RUN      ] Linalg.Mat4AddIsElementwise
+[       OK ] Linalg.Mat4AddIsElementwise (0 ms)
+[----------] 4 tests from Linalg (1 ms total)
+
+[----------] 5 tests from Kalman
+[ RUN      ] Kalman.PredictOnlyPropagatesConstantVelocity
+[       OK ] Kalman.PredictOnlyPropagatesConstantVelocity (0 ms)
+[ RUN      ] Kalman.PredictGrowsCovariance
+[       OK ] Kalman.PredictGrowsCovariance (0 ms)
+[ RUN      ] Kalman.UpdateShrinksCovariance
+[       OK ] Kalman.UpdateShrinksCovariance (0 ms)
+[ RUN      ] Kalman.ConvergesOnStationaryTargetAndCovarianceStaysBounded
+[       OK ] Kalman.ConvergesOnStationaryTargetAndCovarianceStaysBounded (0 ms)
+[ RUN      ] Kalman.InnovationIsZeroWhenMeasurementMatchesPrediction
+[       OK ] Kalman.InnovationIsZeroWhenMeasurementMatchesPrediction (0 ms)
+[----------] 5 tests from Kalman (2 ms total)
+
+[----------] 3 tests from Gating
+[ RUN      ] Gating.AcceptsInsideThreshold
+[       OK ] Gating.AcceptsInsideThreshold (0 ms)
+[ RUN      ] Gating.RejectsAtOrAboveThreshold
+[       OK ] Gating.RejectsAtOrAboveThreshold (0 ms)
+[ RUN      ] Gating.CustomThresholdIsRespected
+[       OK ] Gating.CustomThresholdIsRespected (0 ms)
+[----------] 3 tests from Gating (0 ms total)
+
+[----------] 3 tests from Hungarian
+[ RUN      ] Hungarian.KnownThreeByThreeOptimalIsFive
+[       OK ] Hungarian.KnownThreeByThreeOptimalIsFive (0 ms)
+[ RUN      ] Hungarian.RectangularMoreColumnsThanRows
+[       OK ] Hungarian.RectangularMoreColumnsThanRows (0 ms)
+[ RUN      ] Hungarian.RectangularMoreRowsThanColumns
+[       OK ] Hungarian.RectangularMoreRowsThanColumns (0 ms)
+[----------] 3 tests from Hungarian (0 ms total)
+
+[----------] 4 tests from GatedAssignment
+[ RUN      ] GatedAssignment.OptimalBeatsGreedyNearest
+[       OK ] GatedAssignment.OptimalBeatsGreedyNearest (0 ms)
+[ RUN      ] GatedAssignment.DisjointComponentsSolvedIndependently
+[       OK ] GatedAssignment.DisjointComponentsSolvedIndependently (0 ms)
+[ RUN      ] GatedAssignment.NoEdgesProducesNoAssociations
+[       OK ] GatedAssignment.NoEdgesProducesNoAssociations (0 ms)
+[ RUN      ] GatedAssignment.NoDuplicateTrackOrDetectionInResult
+[       OK ] GatedAssignment.NoDuplicateTrackOrDetectionInResult (0 ms)
+[----------] 4 tests from GatedAssignment (1 ms total)
+
+[----------] 3 tests from SpscRing
+[ RUN      ] SpscRing.PushPopSingleThreadedFifoOrder
+[       OK ] SpscRing.PushPopSingleThreadedFifoOrder (0 ms)
+[ RUN      ] SpscRing.FullRingRejectsPush
+[       OK ] SpscRing.FullRingRejectsPush (0 ms)
+[ RUN      ] SpscRing.ConcurrentProducerConsumerPreservesOrderAndCompleteness
+[       OK ] SpscRing.ConcurrentProducerConsumerPreservesOrderAndCompleteness (77 ms)
+[----------] 3 tests from SpscRing (78 ms total)
+
+[----------] 6 tests from Tracker
+[ RUN      ] Tracker.ScanCountConservation
+[       OK ] Tracker.ScanCountConservation (0 ms)
+[ RUN      ] Tracker.NoDuplicateTrackIds
+[       OK ] Tracker.NoDuplicateTrackIds (0 ms)
+[ RUN      ] Tracker.ConfirmsAfterMOfNHits
+[       OK ] Tracker.ConfirmsAfterMOfNHits (0 ms)
+[ RUN      ] Tracker.DeletesConfirmedTrackAfterConsecutiveMisses
+[       OK ] Tracker.DeletesConfirmedTrackAfterConsecutiveMisses (0 ms)
+[ RUN      ] Tracker.GateActuallyRejectsFarDetection
+[       OK ] Tracker.GateActuallyRejectsFarDetection (0 ms)
+[ RUN      ] Tracker.TentativeTrackNeverConfirmedIsDroppedNotLeftLingering
+[       OK ] Tracker.TentativeTrackNeverConfirmedIsDroppedNotLeftLingering (0 ms)
+[----------] 6 tests from Tracker (2 ms total)
+
+[----------] 4 tests from Replay
+[ RUN      ] Replay.WriteReadRoundTripExactValues
+[       OK ] Replay.WriteReadRoundTripExactValues (0 ms)
+[ RUN      ] Replay.MultipleScansReadInOrder
+[       OK ] Replay.MultipleScansReadInOrder (0 ms)
+[ RUN      ] Replay.EmptyStreamReturnsFalse
+[       OK ] Replay.EmptyStreamReturnsFalse (0 ms)
+[ RUN      ] Replay.CanonicalLineListsSortedConfirmedIdsOnly
+[       OK ] Replay.CanonicalLineListsSortedConfirmedIdsOnly (0 ms)
+[----------] 4 tests from Replay (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 32 tests from 8 test suites ran. (91 ms total)
+[  PASSED  ] 32 tests.
+=== autolabel_cli bench small, 8 threads (TSan, setarch -R) ===
+num_agents=40 num_steps=2000 threads=8
+PAIRS_SCANNED=1560000
+PAIRS_CANDIDATE=37168
+ELAPSED_S=0.0295252
+THROUGHPUT_PAIRS_PER_SEC=5.28362e+07
+PREFILTER_DROP_PCT=97.6174
+EVENTS_FOUND=53 (incidental: the bench corpus plants no maneuvers, so these are background agents that happened to end up close_proximity by random lane/speed assignment, not a correctness signal; see the validation corpus for that)

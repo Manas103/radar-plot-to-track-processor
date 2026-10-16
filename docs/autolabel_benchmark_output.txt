@@ -1,0 +1,23 @@
+num_agents=150 num_steps=100000 threads=8
+PAIRS_SCANNED=1117500000
+PAIRS_CANDIDATE=1394162
+ELAPSED_S=1.08347
+THROUGHPUT_PAIRS_PER_SEC=1.0314e+09
+PREFILTER_DROP_PCT=99.8752
+EVENTS_FOUND=751 (incidental: the bench corpus plants no maneuvers, so these are background agents that happened to end up close_proximity by random lane/speed assignment, not a correctness signal; see the validation corpus for that)
+num_agents=150 num_steps=100000 threads=8
+PAIRS_SCANNED=1117500000
+PAIRS_CANDIDATE=1394162
+ELAPSED_S=1.09777
+THROUGHPUT_PAIRS_PER_SEC=1.01797e+09
+PREFILTER_DROP_PCT=99.8752
+EVENTS_FOUND=751 (incidental: the bench corpus plants no maneuvers, so these are background agents that happened to end up close_proximity by random lane/speed assignment, not a correctness signal; see the validation corpus for that)
+---
+num_agents=150 num_steps=100000 threads=8
+PAIRS_SCANNED=1117500000
+PAIRS_CANDIDATE=1394162
+ELAPSED_S=1.06411
+THROUGHPUT_PAIRS_PER_SEC=1.05018e+09
+PREFILTER_DROP_PCT=99.8752
+EVENTS_FOUND=751 (incidental: the bench corpus plants no maneuvers, so these are background agents that happened to end up close_proximity by random lane/speed assignment, not a correctness signal; see the validation corpus for that)
+---
