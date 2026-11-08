@@ -14,6 +14,8 @@ struct MineParams {
     Thresholds thresholds;
     double merge_zone_x_start_m = 400.0;
     double merge_zone_x_end_m = 600.0;
+    double pudo_zone_x_start_m = 1200.0;
+    double pudo_zone_x_end_m = 1400.0;
     int num_threads = 8;
     bool run_pairwise = true;
     bool run_single_agent = true;

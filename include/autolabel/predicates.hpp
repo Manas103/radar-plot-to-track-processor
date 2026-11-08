@@ -33,6 +33,8 @@ struct Thresholds {
 
     double cut_in_follow_gap_m = 10.0;
     int cut_in_window_steps = 50;
+
+    double pullover_stop_speed_mps = 2.0; // speed at the end of the lateral shift must drop below this
 };
 
 struct Hit {
@@ -46,6 +48,20 @@ struct Hit {
 bool detect_lane_change(const AgentSpec& a, int t, double dt_s, const Thresholds& th, Hit* out);
 bool detect_hard_brake(const AgentSpec& a, int t, double dt_s, const Thresholds& th, Hit* out);
 bool detect_high_acceleration(const AgentSpec& a, int t, double dt_s, const Thresholds& th, Hit* out);
+
+// A lateral shift (the same lane_shift_core lane_change and merge use)
+// that ends with the agent's speed below pullover_stop_speed_mps: a
+// vehicle easing toward the curb and coming to a near-stop, anywhere in
+// the segment.
+bool detect_pullover(const AgentSpec& a, int t, double dt_s, const Thresholds& th, Hit* out);
+
+// Exactly detect_pullover's lateral-shift-plus-stop pattern, gated to a
+// declared pickup/dropoff zone on the longitudinal axis (the same
+// zone-gating idiom detect_merge uses for merge_zone_x_start_m/end_m): a
+// pullover inside a flagged PUDO curb zone is a pickup/dropoff approach,
+// the same maneuver shape with a different, location-dependent meaning.
+bool detect_pickup_dropoff_approach(const AgentSpec& a, int t, double dt_s, const Thresholds& th,
+                                     double pudo_zone_x_start_m, double pudo_zone_x_end_m, Hit* out);
 
 // Pairwise predicates: only ever called on a pair the grid prefilter has
 // already judged close enough at step t to be worth the extra arithmetic.

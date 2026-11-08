@@ -25,6 +25,8 @@ EVENT_CLASSES = [
     "merge",
     "high_acceleration",
     "cyclist_vehicle_close_approach",
+    "pickup_dropoff_approach",
+    "pullover",
 ]
 
 VEHICLE, CYCLIST = 0, 1
@@ -190,6 +192,7 @@ TH = dict(
     unprotected_left_oncoming_speed_mps=5.0,
     cut_in_follow_gap_m=10.0,
     cut_in_window_steps=50,
+    pullover_stop_speed_mps=2.0,
 )
 
 
@@ -330,6 +333,25 @@ def detect_merge(a: Agent, t: int, dt_s: float, zone_start: float, zone_end: flo
     return None
 
 
+def detect_pullover(a: Agent, t: int, dt_s: float):
+    hit = detect_lane_change(a, t, dt_s)
+    if hit is None:
+        return None
+    end_speed = pose_at(a, hit[1], dt_s)[3]
+    return hit if end_speed <= TH["pullover_stop_speed_mps"] else None
+
+
+def detect_pickup_dropoff_approach(a: Agent, t: int, dt_s: float, zone_start: float, zone_end: float):
+    hit = detect_lane_change(a, t, dt_s)
+    if hit is None:
+        return None
+    mid_x = pose_at(a, t, dt_s)[0]
+    if not (zone_start <= mid_x <= zone_end):
+        return None
+    end_speed = pose_at(a, hit[1], dt_s)[3]
+    return hit if end_speed <= TH["pullover_stop_speed_mps"] else None
+
+
 def detect_cyclist_vehicle_close_approach(a: Agent, b: Agent, t: int, dt_s: float):
     if a.type == b.type:
         return None
@@ -370,6 +392,13 @@ def mine_segment(seg: Segment):
                 hits["high_acceleration"].add((a.id, a.id))
             if detect_merge(a, t, seg.dt_s, 400.0, 600.0):
                 hits["merge"].add((a.id, a.id))
+            # Same precedence as the C++ miner: a hit inside the declared
+            # PUDO zone is recorded as pickup_dropoff_approach only, not
+            # also as a generic pullover.
+            if detect_pickup_dropoff_approach(a, t, seg.dt_s, 1200.0, 1400.0):
+                hits["pickup_dropoff_approach"].add((a.id, a.id))
+            elif detect_pullover(a, t, seg.dt_s):
+                hits["pullover"].add((a.id, a.id))
         for i in range(n):
             for j in range(i + 1, n):
                 a, b = agents[i], agents[j]

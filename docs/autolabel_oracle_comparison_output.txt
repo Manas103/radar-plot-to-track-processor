@@ -1,7 +1,7 @@
-exported 20 segments to /tmp/tmp0g5k3hvk/corpus.tsv
-segments=20 events=531
-EVENT_LOG_SHA256=4cb95a2951e58e6287bfcb8c548068a562bb66faebd327b200f8552d18b0a127
-  lane_change: 80
+exported 20 segments to /tmp/tmpt7rc0k5v/corpus.tsv
+segments=20 events=611
+EVENT_LOG_SHA256=1aaa89e78971ff5452fba8b0f81c450c06d8d0bb005d56e98e2a1b42dc7ccbd1
+  lane_change: 120
   crossing_paths: 40
   unprotected_left: 20
   cut_in: 20
@@ -10,6 +10,8 @@ EVENT_LOG_SHA256=4cb95a2951e58e6287bfcb8c548068a562bb66faebd327b200f8552d18b0a12
   merge: 20
   high_acceleration: 40
   cyclist_vehicle_close_approach: 40
-segment,class triples compared: 180
-triples agreeing exactly: 180
+  pickup_dropoff_approach: 20
+  pullover: 20
+segment,class triples compared: 220
+triples agreeing exactly: 220
 ORACLE_AGREEMENT=PASS (0 mismatches)

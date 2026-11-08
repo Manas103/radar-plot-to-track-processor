@@ -300,6 +300,111 @@ std::vector<Scenario> make_validation_corpus(int num_segments, unsigned seed) {
             s.agents.push_back(passing_vehicle);
         }
 
+        // 9) pullover: lane 20 -> 19 (a lane deliberately unused by any
+        // other scenario or background agent, so the lateral shift and
+        // stop cannot coincidentally trip another predicate against an
+        // unrelated nearby agent) toward the curb, overlapping a gentle,
+        // sustained decel pulse timed so the agent is near-stopped right as
+        // the lateral shift completes, at a longitudinal position well
+        // outside the declared PUDO zone [1200, 1400].
+        {
+            AgentSpec a;
+            a.id = next_id++;
+            a.corridor_axis = 0;
+            a.lane_index = 20;
+            a.base_speed_mps = 15.0;
+            a.x0 = -1450.0; // ~x=50 at t_s=100s, outside the PUDO zone
+            a.lane_changes.push_back({980, 1020, 20, 19});
+            a.speed_pulses.push_back({850, 1150, -1.0});
+            s.agents.push_back(a);
+        }
+
+        // 10) pickup_dropoff_approach: the identical lateral-shift-plus-stop
+        // shape as (9), same deliberately-unused lane, but positioned so
+        // the maneuver's longitudinal position falls inside the declared
+        // PUDO zone [1200, 1400].
+        {
+            AgentSpec a;
+            a.id = next_id++;
+            a.corridor_axis = 0;
+            a.lane_index = 20;
+            a.base_speed_mps = 15.0;
+            a.x0 = -170.0; // ~x=1217 at the detected maneuver, inside the PUDO zone
+            a.lane_changes.push_back({980, 1020, 20, 19});
+            a.speed_pulses.push_back({850, 1150, -1.0});
+            s.agents.push_back(a);
+        }
+
+        out.push_back(s);
+    }
+    return out;
+}
+
+std::vector<Scenario> make_mining_corpus(const MiningCorpusParams& p) {
+    std::vector<Scenario> out;
+    out.reserve(p.num_segments);
+
+    std::mt19937 rng(p.seed);
+    std::uniform_int_distribution<int> maneuver_dist(0, 2); // 0=lane_change, 1=pullover, 2=pudo
+    std::uniform_int_distribution<int> shift_lanes_dist(1, 4);
+    std::uniform_real_distribution<double> speed_dist(10.0, 18.0);
+    std::uniform_real_distribution<double> decel_dist(0.7, 1.3);
+    std::uniform_real_distribution<double> pudo_x_jitter(-60.0, 60.0); // spread around the PUDO zone's midpoint
+    std::uniform_real_distribution<double> non_pudo_x_dist(-900.0, -50.0); // t_s=100s mid_x stays well below zone start
+    const double pudo_zone_mid_x = (p.pudo_zone_x_start_m + p.pudo_zone_x_end_m) / 2.0;
+
+    constexpr int kShiftStart = 550, kShiftEnd = 595; // fixed timing, matches lane_change_window_steps=45
+    constexpr int kShiftMid = (kShiftStart + kShiftEnd) / 2;
+    constexpr double kMidTimeS = kShiftMid * 0.1; // dt_s = 0.1 for every mining-corpus segment
+
+    for (int i = 0; i < p.num_segments; ++i) {
+        const int maneuver = maneuver_dist(rng);
+        const int shift_lanes = shift_lanes_dist(rng);
+        const double speed = speed_dist(rng);
+
+        Scenario s;
+        s.segment_id = static_cast<std::uint32_t>(i + 1);
+        s.dt_s = 0.1;
+        s.num_steps = 1200;
+
+        AgentSpec a;
+        a.id = 1;
+        a.corridor_axis = 0;
+        a.lane_index = 10;
+        a.base_speed_mps = speed;
+        a.lane_changes.push_back({kShiftStart, kShiftEnd, 10, 10 - shift_lanes});
+
+        if (maneuver == 0) {
+            // plain lane_change: positioned far from the PUDO zone so it is
+            // never mistaken for a pullover or pickup_dropoff_approach.
+            a.x0 = non_pudo_x_dist(rng) - speed * kMidTimeS;
+        } else {
+            const double decel = decel_dist(rng);
+            const double half_s = speed / decel; // peak deviation cancels base_speed exactly at the pulse midpoint
+            const int half_steps = static_cast<int>(half_s / s.dt_s);
+            a.speed_pulses.push_back({kShiftMid - half_steps, kShiftMid + half_steps, -decel});
+            // The decel pulse displaces the agent backward relative to a
+            // plain constant-speed estimate by exactly 0.5*decel*half_s^2
+            // at its own midpoint (pulse_displacement's closed form,
+            // mirrored here rather than called, since x0 is being solved
+            // for, not evaluated from); without this correction the actual
+            // position at the detected maneuver drifts up to ~200m from
+            // the naive constant-speed estimate, enough to miss the PUDO
+            // zone check entirely for a meaningful fraction of segments
+            // (see README "What broke").
+            const double decel_offset_m = 0.5 * decel * half_s * half_s;
+            if (maneuver == 1) {
+                // pullover: outside the PUDO zone.
+                a.x0 = non_pudo_x_dist(rng) - speed * kMidTimeS + decel_offset_m;
+            } else {
+                // pickup_dropoff_approach: inside the PUDO zone at the
+                // moment the shift's window is probed.
+                const double target_mid_x = pudo_zone_mid_x + pudo_x_jitter(rng);
+                a.x0 = target_mid_x - speed * kMidTimeS + decel_offset_m;
+            }
+        }
+
+        s.agents.push_back(a);
         out.push_back(s);
     }
     return out;

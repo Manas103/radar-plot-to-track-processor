@@ -21,8 +21,14 @@ _deps/
 __pycache__/
 *.pyc
 venv/
+venv_linux/
 .venv/
 .pytest_cache/
+
+# maneuver_search's 220,000-segment mining corpus and mined events are
+# large, regenerable simulation output, not source. Regenerate with:
+#   ./build/autolabel_cli mine-corpus /tmp/corpus.tsv /tmp/events.tsv 220000 1
+maneuver_search/*.tsv
 
 # IDE / editor
 .vscode/

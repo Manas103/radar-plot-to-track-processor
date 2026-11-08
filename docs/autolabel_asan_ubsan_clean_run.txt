@@ -1,8 +1,8 @@
 === autolabel_tests (ASan+UBSan) ===
-Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Application process flow/projects/radar-plot-to-track-processor/build-asan/_deps/googletest-src/googletest/src/gtest_main.cc
-[==========] Running 24 tests from 3 test suites.
+Running main() from /home/manas/build/radar-plot-to-track-processor/build-asan/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 29 tests from 3 test suites.
 [----------] Global test environment set-up.
-[----------] 16 tests from Predicates
+[----------] 21 tests from Predicates
 [ RUN      ] Predicates.LaneChangeFiresOnScriptedShift
 [       OK ] Predicates.LaneChangeFiresOnScriptedShift (0 ms)
 [ RUN      ] Predicates.LaneChangeDoesNotFireOnStraightCruise
@@ -33,9 +33,19 @@ Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Appl
 [       OK ] Predicates.MergeDoesNotFireOutsideDeclaredZone (0 ms)
 [ RUN      ] Predicates.CyclistVehicleCloseApproachFiresOnTightPass
 [       OK ] Predicates.CyclistVehicleCloseApproachFiresOnTightPass (0 ms)
+[ RUN      ] Predicates.PulloverFiresOnLateralShiftEndingNearStandstill
+[       OK ] Predicates.PulloverFiresOnLateralShiftEndingNearStandstill (0 ms)
+[ RUN      ] Predicates.PulloverDoesNotFireOnStraightCruise
+[       OK ] Predicates.PulloverDoesNotFireOnStraightCruise (0 ms)
+[ RUN      ] Predicates.PulloverDoesNotFireOnLaneShiftWithoutStopping
+[       OK ] Predicates.PulloverDoesNotFireOnLaneShiftWithoutStopping (0 ms)
+[ RUN      ] Predicates.PickupDropoffApproachFiresInsideDeclaredZone
+[       OK ] Predicates.PickupDropoffApproachFiresInsideDeclaredZone (0 ms)
+[ RUN      ] Predicates.PickupDropoffApproachDoesNotFireOutsideDeclaredZone
+[       OK ] Predicates.PickupDropoffApproachDoesNotFireOutsideDeclaredZone (0 ms)
 [ RUN      ] Predicates.CyclistVehicleCloseApproachRequiresOneOfEachType
 [       OK ] Predicates.CyclistVehicleCloseApproachRequiresOneOfEachType (0 ms)
-[----------] 16 tests from Predicates (5 ms total)
+[----------] 21 tests from Predicates (1 ms total)
 
 [----------] 4 tests from Prefilter
 [ RUN      ] Prefilter.SameCellIsAdjacent
@@ -46,24 +56,24 @@ Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Appl
 [       OK ] Prefilter.FarCellIsNotAdjacent (0 ms)
 [ RUN      ] Prefilter.NegativeCoordinatesHandledConsistently
 [       OK ] Prefilter.NegativeCoordinatesHandledConsistently (0 ms)
-[----------] 4 tests from Prefilter (1 ms total)
+[----------] 4 tests from Prefilter (0 ms total)
 
 [----------] 4 tests from Miner
 [ RUN      ] Miner.PairsScannedMatchesCombinatorialCount
-[       OK ] Miner.PairsScannedMatchesCombinatorialCount (2 ms)
+[       OK ] Miner.PairsScannedMatchesCombinatorialCount (1 ms)
 [ RUN      ] Miner.ThreadCountDoesNotChangeScanCount
-[       OK ] Miner.ThreadCountDoesNotChangeScanCount (10 ms)
+[       OK ] Miner.ThreadCountDoesNotChangeScanCount (5 ms)
 [ RUN      ] Miner.ValidationCorpusFindsEveryEventClass
-[       OK ] Miner.ValidationCorpusFindsEveryEventClass (67 ms)
+[       OK ] Miner.ValidationCorpusFindsEveryEventClass (33 ms)
 [ RUN      ] Miner.TwoRunsOverSameCorpusProduceIdenticalEvents
-[       OK ] Miner.TwoRunsOverSameCorpusProduceIdenticalEvents (208 ms)
-[----------] 4 tests from Miner (290 ms total)
+[       OK ] Miner.TwoRunsOverSameCorpusProduceIdenticalEvents (112 ms)
+[----------] 4 tests from Miner (152 ms total)
 
 [----------] Global test environment tear-down
-[==========] 24 tests from 3 test suites ran. (299 ms total)
-[  PASSED  ] 24 tests.
+[==========] 29 tests from 3 test suites ran. (154 ms total)
+[  PASSED  ] 29 tests.
 === radar_tests (ASan+UBSan) ===
-Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Application process flow/projects/radar-plot-to-track-processor/build-asan/_deps/googletest-src/googletest/src/gtest_main.cc
+Running main() from /home/manas/build/radar-plot-to-track-processor/build-asan/_deps/googletest-src/googletest/src/gtest_main.cc
 [==========] Running 32 tests from 8 test suites.
 [----------] Global test environment set-up.
 [----------] 4 tests from Linalg
@@ -75,7 +85,7 @@ Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Appl
 [       OK ] Linalg.Mat2InverseRoundTrip (0 ms)
 [ RUN      ] Linalg.Mat4AddIsElementwise
 [       OK ] Linalg.Mat4AddIsElementwise (0 ms)
-[----------] 4 tests from Linalg (1 ms total)
+[----------] 4 tests from Linalg (0 ms total)
 
 [----------] 5 tests from Kalman
 [ RUN      ] Kalman.PredictOnlyPropagatesConstantVelocity
@@ -88,7 +98,7 @@ Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Appl
 [       OK ] Kalman.ConvergesOnStationaryTargetAndCovarianceStaysBounded (0 ms)
 [ RUN      ] Kalman.InnovationIsZeroWhenMeasurementMatchesPrediction
 [       OK ] Kalman.InnovationIsZeroWhenMeasurementMatchesPrediction (0 ms)
-[----------] 5 tests from Kalman (2 ms total)
+[----------] 5 tests from Kalman (0 ms total)
 
 [----------] 3 tests from Gating
 [ RUN      ] Gating.AcceptsInsideThreshold
@@ -106,7 +116,7 @@ Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Appl
 [       OK ] Hungarian.RectangularMoreColumnsThanRows (0 ms)
 [ RUN      ] Hungarian.RectangularMoreRowsThanColumns
 [       OK ] Hungarian.RectangularMoreRowsThanColumns (0 ms)
-[----------] 3 tests from Hungarian (1 ms total)
+[----------] 3 tests from Hungarian (0 ms total)
 
 [----------] 4 tests from GatedAssignment
 [ RUN      ] GatedAssignment.OptimalBeatsGreedyNearest
@@ -117,7 +127,7 @@ Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Appl
 [       OK ] GatedAssignment.NoEdgesProducesNoAssociations (0 ms)
 [ RUN      ] GatedAssignment.NoDuplicateTrackOrDetectionInResult
 [       OK ] GatedAssignment.NoDuplicateTrackOrDetectionInResult (0 ms)
-[----------] 4 tests from GatedAssignment (1 ms total)
+[----------] 4 tests from GatedAssignment (0 ms total)
 
 [----------] 3 tests from SpscRing
 [ RUN      ] SpscRing.PushPopSingleThreadedFifoOrder
@@ -125,12 +135,12 @@ Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Appl
 [ RUN      ] SpscRing.FullRingRejectsPush
 [       OK ] SpscRing.FullRingRejectsPush (0 ms)
 [ RUN      ] SpscRing.ConcurrentProducerConsumerPreservesOrderAndCompleteness
-[       OK ] SpscRing.ConcurrentProducerConsumerPreservesOrderAndCompleteness (17 ms)
-[----------] 3 tests from SpscRing (18 ms total)
+[       OK ] SpscRing.ConcurrentProducerConsumerPreservesOrderAndCompleteness (4 ms)
+[----------] 3 tests from SpscRing (5 ms total)
 
 [----------] 6 tests from Tracker
 [ RUN      ] Tracker.ScanCountConservation
-[       OK ] Tracker.ScanCountConservation (1 ms)
+[       OK ] Tracker.ScanCountConservation (0 ms)
 [ RUN      ] Tracker.NoDuplicateTrackIds
 [       OK ] Tracker.NoDuplicateTrackIds (0 ms)
 [ RUN      ] Tracker.ConfirmsAfterMOfNHits
@@ -141,7 +151,7 @@ Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Appl
 [       OK ] Tracker.GateActuallyRejectsFarDetection (0 ms)
 [ RUN      ] Tracker.TentativeTrackNeverConfirmedIsDroppedNotLeftLingering
 [       OK ] Tracker.TentativeTrackNeverConfirmedIsDroppedNotLeftLingering (0 ms)
-[----------] 6 tests from Tracker (4 ms total)
+[----------] 6 tests from Tracker (1 ms total)
 
 [----------] 4 tests from Replay
 [ RUN      ] Replay.WriteReadRoundTripExactValues
@@ -152,15 +162,20 @@ Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Appl
 [       OK ] Replay.EmptyStreamReturnsFalse (0 ms)
 [ RUN      ] Replay.CanonicalLineListsSortedConfirmedIdsOnly
 [       OK ] Replay.CanonicalLineListsSortedConfirmedIdsOnly (0 ms)
-[----------] 4 tests from Replay (1 ms total)
+[----------] 4 tests from Replay (0 ms total)
 
 [----------] Global test environment tear-down
-[==========] 32 tests from 8 test suites ran. (35 ms total)
+[==========] 32 tests from 8 test suites ran. (8 ms total)
 [  PASSED  ] 32 tests.
-=== autolabel_cli mine (ASan+UBSan) ===
-segments=20 events=531
-EVENT_LOG_SHA256=4cb95a2951e58e6287bfcb8c548068a562bb66faebd327b200f8552d18b0a127
-  lane_change: 80
+verify-replay: two independent mining runs over 20 validation segments
+  run produced 611 events, hash 1aaa89e78971ff5452fba8b0f81c450c06d8d0bb005d56e98e2a1b42dc7ccbd1
+  run produced 611 events, hash 1aaa89e78971ff5452fba8b0f81c450c06d8d0bb005d56e98e2a1b42dc7ccbd1
+hash_1=1aaa89e78971ff5452fba8b0f81c450c06d8d0bb005d56e98e2a1b42dc7ccbd1
+hash_2=1aaa89e78971ff5452fba8b0f81c450c06d8d0bb005d56e98e2a1b42dc7ccbd1
+REPLAY_BIT_FOR_BIT=PASS
+segments=20 events=611
+EVENT_LOG_SHA256=1aaa89e78971ff5452fba8b0f81c450c06d8d0bb005d56e98e2a1b42dc7ccbd1
+  lane_change: 120
   crossing_paths: 40
   unprotected_left: 20
   cut_in: 20
@@ -169,11 +184,5 @@ EVENT_LOG_SHA256=4cb95a2951e58e6287bfcb8c548068a562bb66faebd327b200f8552d18b0a12
   merge: 20
   high_acceleration: 40
   cyclist_vehicle_close_approach: 40
-=== autolabel_cli bench small (ASan+UBSan, multithreaded) ===
-num_agents=40 num_steps=2000 threads=8
-PAIRS_SCANNED=1560000
-PAIRS_CANDIDATE=37168
-ELAPSED_S=0.0215088
-THROUGHPUT_PAIRS_PER_SEC=7.25285e+07
-PREFILTER_DROP_PCT=97.6174
-EVENTS_FOUND=53 (incidental: the bench corpus plants no maneuvers, so these are background agents that happened to end up close_proximity by random lane/speed assignment, not a correctness signal; see the validation corpus for that)
+  pickup_dropoff_approach: 20
+  pullover: 20

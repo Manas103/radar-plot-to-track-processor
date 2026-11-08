@@ -91,6 +91,17 @@ void scan_single_agent_range(const Scenario& scenario, const MineParams& params,
             if (detect_merge(a, a, t, scenario.dt_s, params.thresholds, params.merge_zone_x_start_m,
                               params.merge_zone_x_end_m, &hit))
                 hits->push_back({a.id, a.id, EventClass::kMerge, hit.start_step, hit.end_step});
+            // detect_pickup_dropoff_approach is checked before detect_pullover
+            // on the same timestep: a lateral-shift-plus-stop inside the
+            // declared PUDO zone is a pickup/dropoff approach specifically,
+            // not also a generic pullover, so a hit here skips the
+            // broader pullover check for this (agent, t).
+            if (detect_pickup_dropoff_approach(a, t, scenario.dt_s, params.thresholds, params.pudo_zone_x_start_m,
+                                                params.pudo_zone_x_end_m, &hit)) {
+                hits->push_back({a.id, a.id, EventClass::kPickupDropoffApproach, hit.start_step, hit.end_step});
+            } else if (detect_pullover(a, t, scenario.dt_s, params.thresholds, &hit)) {
+                hits->push_back({a.id, a.id, EventClass::kPullover, hit.start_step, hit.end_step});
+            }
         }
     }
 }

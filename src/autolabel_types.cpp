@@ -15,6 +15,8 @@ const char* event_class_name(EventClass c) {
         case EventClass::kMerge: return "merge";
         case EventClass::kHighAcceleration: return "high_acceleration";
         case EventClass::kCyclistVehicleCloseApproach: return "cyclist_vehicle_close_approach";
+        case EventClass::kPickupDropoffApproach: return "pickup_dropoff_approach";
+        case EventClass::kPullover: return "pullover";
     }
     return "unknown";
 }

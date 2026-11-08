@@ -228,6 +228,25 @@ bool detect_merge(const AgentSpec& a, const AgentSpec& b, int t, double dt_s, co
     return false;
 }
 
+bool detect_pullover(const AgentSpec& a, int t, double dt_s, const Thresholds& th, Hit* out) {
+    Hit lane_hit;
+    if (!lane_shift_core(a, t, dt_s, th, &lane_hit, nullptr)) return false;
+    if (pose_at(a, lane_hit.end_step, dt_s).speed_mps > th.pullover_stop_speed_mps) return false;
+    if (out) *out = lane_hit;
+    return true;
+}
+
+bool detect_pickup_dropoff_approach(const AgentSpec& a, int t, double dt_s, const Thresholds& th,
+                                     double pudo_zone_x_start_m, double pudo_zone_x_end_m, Hit* out) {
+    Hit lane_hit;
+    double mid_longitudinal = 0.0;
+    if (!lane_shift_core(a, t, dt_s, th, &lane_hit, &mid_longitudinal)) return false;
+    if (mid_longitudinal < pudo_zone_x_start_m || mid_longitudinal > pudo_zone_x_end_m) return false;
+    if (pose_at(a, lane_hit.end_step, dt_s).speed_mps > th.pullover_stop_speed_mps) return false;
+    if (out) *out = lane_hit;
+    return true;
+}
+
 bool detect_cyclist_vehicle_close_approach(const AgentSpec& a, const AgentSpec& b, int t, double dt_s,
                                             const Thresholds& th, Hit* out) {
     if (a.type == b.type) return false; // needs exactly one vehicle and one cyclist

@@ -164,6 +164,58 @@ TEST(Predicates, CyclistVehicleCloseApproachFiresOnTightPass) {
     EXPECT_TRUE(detect_cyclist_vehicle_close_approach(vehicle, cyclist, 0, kDt, th, &hit));
 }
 
+TEST(Predicates, PulloverFiresOnLateralShiftEndingNearStandstill) {
+    AgentSpec a = cruiser(1, 3, 15.0, -1450.0);
+    a.lane_changes.push_back({980, 1020, 3, 0});
+    a.speed_pulses.push_back({850, 1150, -1.0});
+    Thresholds th;
+    Hit hit;
+    bool found = false;
+    for (int t = 960; t < 1040 && !found; ++t) found = detect_pullover(a, t, kDt, th, &hit);
+    EXPECT_TRUE(found);
+}
+
+TEST(Predicates, PulloverDoesNotFireOnStraightCruise) {
+    AgentSpec a = cruiser(1, 3, 15.0, -1450.0);
+    Thresholds th;
+    Hit hit;
+    for (int t = 0; t < 2000; t += 20) EXPECT_FALSE(detect_pullover(a, t, kDt, th, &hit));
+}
+
+TEST(Predicates, PulloverDoesNotFireOnLaneShiftWithoutStopping) {
+    AgentSpec a = cruiser(1, 3, 15.0, -1450.0);
+    a.lane_changes.push_back({980, 1020, 3, 0}); // same shift, no decel pulse: never stops
+    Thresholds th;
+    Hit hit;
+    bool found = false;
+    for (int t = 960; t < 1040; ++t) found = found || detect_pullover(a, t, kDt, th, &hit);
+    EXPECT_FALSE(found);
+}
+
+TEST(Predicates, PickupDropoffApproachFiresInsideDeclaredZone) {
+    AgentSpec a = cruiser(1, 3, 15.0, -170.0); // ~x=1217 at the maneuver, inside [1200, 1400]
+    a.lane_changes.push_back({980, 1020, 3, 0});
+    a.speed_pulses.push_back({850, 1150, -1.0});
+    Thresholds th;
+    Hit hit;
+    bool found = false;
+    for (int t = 960; t < 1040 && !found; ++t)
+        found = detect_pickup_dropoff_approach(a, t, kDt, th, 1200.0, 1400.0, &hit);
+    EXPECT_TRUE(found);
+}
+
+TEST(Predicates, PickupDropoffApproachDoesNotFireOutsideDeclaredZone) {
+    AgentSpec a = cruiser(1, 3, 15.0, -1450.0); // ~x=50, outside [1200, 1400]
+    a.lane_changes.push_back({980, 1020, 3, 0});
+    a.speed_pulses.push_back({850, 1150, -1.0});
+    Thresholds th;
+    Hit hit;
+    bool found = false;
+    for (int t = 960; t < 1040; ++t)
+        found = found || detect_pickup_dropoff_approach(a, t, kDt, th, 1200.0, 1400.0, &hit);
+    EXPECT_FALSE(found);
+}
+
 TEST(Predicates, CyclistVehicleCloseApproachRequiresOneOfEachType) {
     AgentSpec v1 = cruiser(1, 17, 15.0, -30.0);
     AgentSpec v2 = cruiser(2, 18, 15.0, -30.0);

@@ -40,6 +40,25 @@ Scenario make_bench_corpus(const BenchCorpusParams& p);
 // num_segments independent segments, seeded off `seed + segment index`.
 std::vector<Scenario> make_validation_corpus(int num_segments, unsigned seed);
 
+// One agent, one segment, one randomly chosen maneuver (lane_change,
+// pullover, or pickup_dropoff_approach, roughly evenly split), timing,
+// lane-shift magnitude and longitudinal position all randomized within
+// ranges the matching predicate can actually fire on. This is a
+// dedicated mining pass for the maneuver-similarity-search project
+// (Python layer under maneuver_search/), not the main validation
+// corpus: it is not meant to exercise pairwise predicates, correctness
+// against the Python oracle, or replay determinism (those are already
+// covered by make_validation_corpus). Deliberately not multi-agent
+// traffic: single-agent-per-segment keeps a 220,000-segment mining pass
+// a single-agent-only scan, with no O(n^2) pairwise cost at all.
+struct MiningCorpusParams {
+    int num_segments = 220000;
+    unsigned seed = 1;
+    double pudo_zone_x_start_m = 1200.0;
+    double pudo_zone_x_end_m = 1400.0;
+};
+std::vector<Scenario> make_mining_corpus(const MiningCorpusParams& p);
+
 // Plain-text export of a corpus's agent parameters (not poses: pose_at is
 // closed-form, so the parameters are the whole scenario). This is the
 // shared input the independent Python reference miner reads; only the data

@@ -75,9 +75,11 @@ enum class EventClass : std::uint8_t {
     kMerge = 6,
     kHighAcceleration = 7,
     kCyclistVehicleCloseApproach = 8,
+    kPickupDropoffApproach = 9,
+    kPullover = 10,
 };
 
-constexpr int kNumEventClasses = 9;
+constexpr int kNumEventClasses = 11;
 
 const char* event_class_name(EventClass c);
 

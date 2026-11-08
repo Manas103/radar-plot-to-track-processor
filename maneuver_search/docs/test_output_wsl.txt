@@ -1,0 +1,29 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-9.2.0, pluggy-1.7.0 -- /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Application process flow/projects/radar-plot-to-track-processor/maneuver_search/venv_linux/bin/python
+cachedir: .pytest_cache
+rootdir: /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Application process flow/projects/radar-plot-to-track-processor/maneuver_search
+configfile: pyproject.toml
+collecting ... collected 20 items
+
+tests/test_corpus_io.py::test_every_segment_gets_one_of_the_three_labels PASSED [  5%]
+tests/test_corpus_io.py::test_segment_count_does_not_exceed_requested_corpus_size PASSED [ 10%]
+tests/test_corpus_io.py::test_pullover_and_pdo_segments_have_a_near_zero_end_speed PASSED [ 15%]
+tests/test_corpus_io.py::test_lane_change_only_segments_do_not_report_has_stop PASSED [ 20%]
+tests/test_corpus_io.py::test_pdo_segments_detection_point_falls_inside_declared_zone PASSED [ 25%]
+tests/test_features.py::test_raw_vector_has_six_named_features PASSED    [ 30%]
+tests/test_features.py::test_in_pudo_zone_flag_set_correctly PASSED      [ 35%]
+tests/test_features.py::test_has_stop_flag_matches_segment PASSED        [ 40%]
+tests/test_features.py::test_build_feature_matrix_is_standardized PASSED [ 45%]
+tests/test_index.py::test_hnswlib_matches_brute_force_reference_oracle_on_small_data PASSED [ 50%]
+tests/test_index.py::test_query_returns_requested_k_and_valid_labels PASSED [ 55%]
+tests/test_index.py::test_brute_force_exclude_self_never_returns_the_query_itself PASSED [ 60%]
+tests/test_labeling.py::test_identical_segments_are_relevant_to_themselves PASSED [ 65%]
+tests/test_labeling.py::test_different_class_is_never_relevant PASSED    [ 70%]
+tests/test_labeling.py::test_same_class_within_tolerance_is_relevant PASSED [ 75%]
+tests/test_labeling.py::test_same_class_far_outside_tolerance_is_not_relevant PASSED [ 80%]
+tests/test_labeling.py::test_relevance_is_symmetric PASSED               [ 85%]
+tests/test_novelty.py::test_injected_vectors_have_higher_novelty_score_than_in_distribution_points PASSED [ 90%]
+tests/test_novelty.py::test_in_distribution_points_mostly_fall_under_their_own_calibrated_threshold PASSED [ 95%]
+tests/test_novelty.py::test_generate_injected_vectors_shape_and_internal_consistency PASSED [100%]
+
+============================== 20 passed in 3.94s ==============================

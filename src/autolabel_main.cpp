@@ -18,7 +18,14 @@
 //     a plain-text file the independent Python reference miner reads, so
 //     both sides mine the identical scenarios without sharing any
 //     predicate or mining code.
+//   mine-corpus <out_corpus.tsv> <out_events.tsv> [num_segments=220000] [seed=1]
+//     Generates and mines the single-agent-per-segment maneuver mining
+//     corpus (one randomly chosen lane_change/pullover/pickup_dropoff_approach
+//     per segment) for the Python maneuver-similarity-search layer under
+//     maneuver_search/, writing both the agent parameters and the mined
+//     events so the Python side can join them into feature vectors.
 
+#include <chrono>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
@@ -133,6 +140,56 @@ int cmd_verify_replay(int argc, char** argv) {
     return match ? 0 : 1;
 }
 
+int cmd_mine_corpus(int argc, char** argv) {
+    if (argc < 4) {
+        std::cerr << "usage: autolabel_cli mine-corpus <out_corpus.tsv> <out_events.tsv> "
+                     "[num_segments=220000] [seed=1]\n";
+        return 2;
+    }
+    std::string corpus_path = argv[2];
+    std::string events_path = argv[3];
+    autolabel::MiningCorpusParams cp;
+    cp.num_segments = argc > 4 ? std::stoi(argv[4]) : 220000;
+    cp.seed = argc > 5 ? static_cast<unsigned>(std::stoul(argv[5])) : 1u;
+
+    std::vector<autolabel::Scenario> corpus = autolabel::make_mining_corpus(cp);
+
+    std::ofstream corpus_out(corpus_path, std::ios::trunc);
+    if (!corpus_out) {
+        std::cerr << "failed to open " << corpus_path << " for writing\n";
+        return 1;
+    }
+    autolabel::write_scenario_corpus(corpus_out, corpus);
+
+    autolabel::MineParams mp;
+    mp.num_threads = 8;
+    mp.run_pairwise = false; // one agent per segment: nothing for the pairwise scan to find
+    mp.pudo_zone_x_start_m = cp.pudo_zone_x_start_m;
+    mp.pudo_zone_x_end_m = cp.pudo_zone_x_end_m;
+
+    const auto t0 = std::chrono::steady_clock::now();
+    autolabel::MineResult result = autolabel::mine_corpus(corpus, mp);
+    const double elapsed_s = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
+
+    std::ofstream events_out(events_path, std::ios::trunc);
+    if (!events_out) {
+        std::cerr << "failed to open " << events_path << " for writing\n";
+        return 1;
+    }
+    events_out << "segment_id\tagent_a\tagent_b\tevent_class\tstart_step\tend_step\n";
+    for (const auto& e : result.events) events_out << autolabel::canonical_event_line(e);
+
+    std::cout << "segments=" << corpus.size() << " events=" << result.events.size()
+              << " elapsed_s=" << elapsed_s << "\n";
+    for (int c = 0; c < autolabel::kNumEventClasses; ++c) {
+        auto cls = static_cast<autolabel::EventClass>(c);
+        int count = 0;
+        for (const auto& e : result.events) count += (e.event_class == cls);
+        std::cout << "  " << autolabel::event_class_name(cls) << ": " << count << "\n";
+    }
+    return 0;
+}
+
 int cmd_export_scenarios(int argc, char** argv) {
     if (argc < 3) {
         std::cerr << "usage: autolabel_cli export-scenarios <out.tsv> [num_segments=20] [seed=1]\n";
@@ -157,7 +214,7 @@ int cmd_export_scenarios(int argc, char** argv) {
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        std::cerr << "usage: autolabel_cli <bench|mine|verify-replay|export-scenarios> ...\n";
+        std::cerr << "usage: autolabel_cli <bench|mine|verify-replay|export-scenarios|mine-corpus> ...\n";
         return 2;
     }
     std::string cmd = argv[1];
@@ -165,6 +222,7 @@ int main(int argc, char** argv) {
     if (cmd == "mine") return cmd_mine(argc, argv);
     if (cmd == "verify-replay") return cmd_verify_replay(argc, argv);
     if (cmd == "export-scenarios") return cmd_export_scenarios(argc, argv);
+    if (cmd == "mine-corpus") return cmd_mine_corpus(argc, argv);
     std::cerr << "unknown subcommand: " << cmd << "\n";
     return 2;
 }

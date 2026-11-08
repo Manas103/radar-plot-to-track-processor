@@ -1,0 +1,4 @@
+numpy==2.5.4
+scikit-learn==1.9.1
+hnswlib==0.8.0
+pytest==9.2.0
