@@ -1,0 +1,85 @@
+Running main() from /mnt/c/Users/Manas/Downloads/Auto Job Applier/Total Job Application process flow/projects/radar-plot-to-track-processor/build-tsan/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 29 tests from 7 test suites.
+[----------] Global test environment set-up.
+[----------] 6 tests from Adsb
+[ RUN      ] Adsb.RoundTripRecoversPositionWithinCprQuantization
+[       OK ] Adsb.RoundTripRecoversPositionWithinCprQuantization (6 ms)
+[ RUN      ] Adsb.TamperedCrcIsDetected
+[       OK ] Adsb.TamperedCrcIsDetected (0 ms)
+[ RUN      ] Adsb.UntamperedCrcPasses
+[       OK ] Adsb.UntamperedCrcPasses (0 ms)
+[ RUN      ] Adsb.DecodedIcaoMatchesEncoded
+[       OK ] Adsb.DecodedIcaoMatchesEncoded (0 ms)
+[ RUN      ] Adsb.OddFormatBitRoundTrips
+[       OK ] Adsb.OddFormatBitRoundTrips (0 ms)
+[ RUN      ] Adsb.CprNlIsLargestNearTheEquatorAndShrinksTowardThePoles
+[       OK ] Adsb.CprNlIsLargestNearTheEquatorAndShrinksTowardThePoles (0 ms)
+[----------] 6 tests from Adsb (7 ms total)
+
+[----------] 3 tests from Geo
+[ RUN      ] Geo.RoundTripWithinScenarioArea
+[       OK ] Geo.RoundTripWithinScenarioArea (0 ms)
+[ RUN      ] Geo.OriginMapsToTheReferencePoint
+[       OK ] Geo.OriginMapsToTheReferencePoint (0 ms)
+[ RUN      ] Geo.NorthIsPositiveYAndEastIsPositiveX
+[       OK ] Geo.NorthIsPositiveYAndEastIsPositiveX (0 ms)
+[----------] 3 tests from Geo (0 ms total)
+
+[----------] 5 tests from Cot
+[ RUN      ] Cot.BuildEventContainsRequiredElementsAndAttributes
+[       OK ] Cot.BuildEventContainsRequiredElementsAndAttributes (0 ms)
+[ RUN      ] Cot.FormatTimeProducesIso8601Utc
+[       OK ] Cot.FormatTimeProducesIso8601Utc (0 ms)
+[ RUN      ] Cot.FormatTimeAdvancesByWholeSeconds
+[       OK ] Cot.FormatTimeAdvancesByWholeSeconds (0 ms)
+[ RUN      ] Cot.StaleIsAfterTime
+[       OK ] Cot.StaleIsAfterTime (0 ms)
+[ RUN      ] Cot.RemarksAreXmlEscaped
+[       OK ] Cot.RemarksAreXmlEscaped (0 ms)
+[----------] 5 tests from Cot (0 ms total)
+
+[----------] 6 tests from LinkSim
+[ RUN      ] LinkSim.InOutageWindowIsExact
+[       OK ] LinkSim.InOutageWindowIsExact (0 ms)
+[ RUN      ] LinkSim.NoScheduledOutageMeansNeverInOutage
+[       OK ] LinkSim.NoScheduledOutageMeansNeverInOutage (0 ms)
+[ RUN      ] LinkSim.NothingSendsDuringOutageRegardlessOfLossOrBudget
+[       OK ] LinkSim.NothingSendsDuringOutageRegardlessOfLossOrBudget (0 ms)
+[ RUN      ] LinkSim.ZeroLossAndAmpleBandwidthAlwaysSucceedsOutsideOutage
+[       OK ] LinkSim.ZeroLossAndAmpleBandwidthAlwaysSucceedsOutsideOutage (0 ms)
+[ RUN      ] LinkSim.CertainLossNeverSucceeds
+[       OK ] LinkSim.CertainLossNeverSucceeds (0 ms)
+[ RUN      ] LinkSim.BandwidthBudgetDoesNotBurstCatchUpAfterOutage
+[       OK ] LinkSim.BandwidthBudgetDoesNotBurstCatchUpAfterOutage (0 ms)
+[----------] 6 tests from LinkSim (0 ms total)
+
+[----------] 3 tests from ReceiverLedger
+[ RUN      ] ReceiverLedger.FirstApplyOfAGuidSucceeds
+[       OK ] ReceiverLedger.FirstApplyOfAGuidSucceeds (0 ms)
+[ RUN      ] ReceiverLedger.SecondApplyOfTheSameGuidIsCountedAsADuplicateNotANewApplication
+[       OK ] ReceiverLedger.SecondApplyOfTheSameGuidIsCountedAsADuplicateNotANewApplication (0 ms)
+[ RUN      ] ReceiverLedger.DistinctGuidsAreCountedIndependently
+[       OK ] ReceiverLedger.DistinctGuidsAreCountedIndependently (0 ms)
+[----------] 3 tests from ReceiverLedger (0 ms total)
+
+[----------] 3 tests from StoreAndForwardSender
+[ RUN      ] StoreAndForwardSender.EventuallyDeliversUnderCertainLossWithEnoughRetries
+[       OK ] StoreAndForwardSender.EventuallyDeliversUnderCertainLossWithEnoughRetries (0 ms)
+[ RUN      ] StoreAndForwardSender.AckLossCausesARealDuplicateDeliveryCaughtByTheLedger
+[       OK ] StoreAndForwardSender.AckLossCausesARealDuplicateDeliveryCaughtByTheLedger (0 ms)
+[ RUN      ] StoreAndForwardSender.NothingIsDeliveredDuringAScheduledOutage
+[       OK ] StoreAndForwardSender.NothingIsDeliveredDuringAScheduledOutage (0 ms)
+[----------] 3 tests from StoreAndForwardSender (0 ms total)
+
+[----------] 3 tests from FusionScenario
+[ RUN      ] FusionScenario.EveryConfiguredSourceProducesAtLeastOneDetectionOverManyScans
+[       OK ] FusionScenario.EveryConfiguredSourceProducesAtLeastOneDetectionOverManyScans (0 ms)
+[ RUN      ] FusionScenario.DetectionSourceIsParallelToScanDetections
+[       OK ] FusionScenario.DetectionSourceIsParallelToScanDetections (0 ms)
+[ RUN      ] FusionScenario.OneConfirmedTrackPerSourceEmergesForASparseCleanScenario
+[       OK ] FusionScenario.OneConfirmedTrackPerSourceEmergesForASparseCleanScenario (0 ms)
+[----------] 3 tests from FusionScenario (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 29 tests from 7 test suites ran. (10 ms total)
+[  PASSED  ] 29 tests.

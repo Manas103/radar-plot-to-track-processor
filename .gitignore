@@ -47,3 +47,9 @@ docs_data/
 # any autolabel_cli mine output). Regenerate with:
 #   python3 python_reference/events_to_sqlite.py docs/sample_events.tsv docs/sample_events.sqlite3
 *.sqlite3
+
+# The raw DF17 frame fixture for the ADS-B cross-check is regenerable test
+# input, not an output artifact; docs/fusion_adsb_crosscheck_output.txt is
+# the actual measured result. Regenerate with:
+#   ./build/fusion_cli adsb-roundtrip-export docs/fusion_adsb_frames.txt 300 7
+docs/fusion_adsb_frames.txt

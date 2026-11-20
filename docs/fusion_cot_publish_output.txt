@@ -1,0 +1,1 @@
+wrote 348 CoT events to /tmp/cot_out_final

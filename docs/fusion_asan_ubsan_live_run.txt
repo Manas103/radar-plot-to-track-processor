@@ -1,0 +1,11 @@
+STORE_FORWARD_SOAK: num_scans=600 outage_start_scan=200 outage_duration_scans=100 kbps=64 loss_probability=0.2
+total_confirmed_tracks=21
+total_messages_enqueued=3590
+forward_attempts=12411
+forward_successes=4512
+applied_count=3590
+DUPLICATE_DELIVERIES=922
+final_queue_depth=0
+ALL_MESSAGES_DRAINED=1
+LOST_MESSAGES=0
+DUPLICATE_APPLICATIONS=0 (ReceiverLedger.apply dedupes by GUID; see duplicate_deliveries above for how many were caught)

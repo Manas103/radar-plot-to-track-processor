@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<event version="2.0" uid="TRACK-1" type="a-u-G" time="2026-01-01T00:00:11Z" start="2026-01-01T00:00:11Z" stale="2026-01-01T00:00:41Z" how="m-g">
+  <point lat="37.507377" lon="-122.148697" hae="9999999.0" ce="9999999.0" le="9999999.0"/>
+  <detail>
+    <contact callsign="TRACK-1"/>
+    <track course="0.0" speed="10.26"/>
+    <remarks>fused multi-source track picture</remarks>
+  </detail>
+</event>

@@ -697,6 +697,260 @@ wsl.exe -d Ubuntu-22.04 -- bash -lc "cd '<repo path under /mnt/c/...>/maneuver_s
   && PYTHONPATH=src venv_linux/bin/python scripts/run_retrieval_and_novelty_eval.py"
 ```
 
+## Multi-source track fusion and degraded-link store-and-forward extension (Nov. 2026, Anduril Mission Operations Engineer Intern req)
+
+Extended with `include/fusion/` and `src/*.cpp` (the `fusion` namespace):
+real ADS-B (Mode S DF17) frame encode/decode, a simulated AIS-shaped
+vessel feed, a merge of both alongside the base tracker's own radar feed
+into one scan the completely unmodified `radar::TrackManager` processes,
+a Cursor-on-Target (CoT) publisher, and a store-and-forward path over a
+simulated degraded link.
+
+**Why this exists.** Lattice's own one-line description is turning many
+data streams into a real-time command and control picture; this is the
+smallest honest version of that, built on top of the base tracker's
+already-proven gating/assignment/Kalman/M-of-N core rather than replacing
+it.
+
+**Honest framing**
+
+- **The tracking algorithm is unchanged.** `radar::TrackManager` is the
+  exact same class the base tracker uses; this extension's only job is to
+  produce one merged `radar::ScanMessage` per tick from three feeds and to
+  publish what comes out the other end. `tests/test_fusion_scenario.cpp`
+  asserts this directly: a sparse, clean scenario with one target per feed
+  confirms exactly 3 tracks, with no feed-aware logic anywhere in the
+  association/Kalman/M-of-N path.
+- **ADS-B frames are synthetically generated to the real DF17 spec, not
+  captured from a receiver.** There is no RF front end on this machine.
+  What is real is the decode: CRC-24 (generator polynomial 0xFFF409) and
+  local CPR position decode (ICAO Annex 10), implemented from the public
+  specification and exercised on frames this project's own encoder
+  produces, the same honest substitution `telemetry-ground-station`'s own
+  Mode S decoder discloses for the same reason (see "Sibling comparison").
+- **CPR decode here is local, not globally unambiguous.** Local decode
+  recovers a position from one frame plus a known reference position
+  within about half a CPR zone, instead of needing a matched even/odd
+  frame pair; this fused tracker's own `GeoRef` origin (a ground station
+  near the scenario area) is exactly that known reference, which is the
+  real-world case local decode is for. It is not validated against
+  externally captured real ADS-B traffic, only against this project's own
+  encoder (round trip) and an independent from-scratch Python
+  re-implementation of the same CRC-24/CPR algorithm
+  (`python_reference/adsb_reference.py`), diffed against ground truth, not
+  against each other, so a bug shared by both implementations would still
+  be caught.
+- **AIS is simulated, not bit-level NMEA/AIS-encoded.** `AisReport`
+  carries the fields a real AIS Class A position report (message type
+  1/2/3) has (MMSI, lat/lon, SOG, COG), which is what "AIS-shaped" on the
+  resume means; there is no real AIS protocol encoding the way the ADS-B
+  feed has a real DF17 encoding.
+- **All three feeds synchronize to the radar's 1 Hz scan cadence.** Real
+  ADS-B and AIS report asynchronously; this fused tracker ticks all three
+  together for simplicity, a disclosed scope decision in the same spirit
+  as the base tracker's "GNN, not JPDA" simplification.
+- **The equirectangular local tangent-plane projection (`geo.hpp`) is
+  honest over the few-kilometer scenario areas this project uses and
+  nowhere else;** it is not a geodesic projection and is not claimed to be
+  accurate at any larger scale.
+- **The CoT schema is authored by this project**, matching the publicly
+  documented CoT 2.0 event structure (event/point/detail/contact/track),
+  not the official TAK product team's exact XSD file, which is not on this
+  machine. Schema validation (`validate_cot.py`) uses `lxml`, genuinely
+  installed in this machine's WSL2 Python, against that authored XSD.
+- **The store-and-forward link's retransmission-on-ACK-loss design is
+  deliberate, not an accident that happened to work.** A naive design
+  where the sender synchronously knows whether its own send succeeded
+  could trivially report 0 duplicates by never retransmitting a delivered
+  message; this design gives the sender no such certainty (the ACK travels
+  the same lossy link and can itself be lost), which is what makes the
+  measured 0 duplicate *applications* in "Measured results" below an
+  earned property of the receiver's GUID dedup, not a property of the
+  transport having no way to duplicate anything.
+- **Machine and toolchain.** Same as the base tracker: 8 physical / 16
+  logical cores, Windows 11 + WSL2 Ubuntu 22.04 (capped 12 cores / 12GB
+  RAM), g++ 11.4.0, `-O3` Release, Python 3.10.12 (WSL2) with `lxml` for
+  CoT schema validation.
+
+### Architecture
+
+```
+include/fusion/
+  types.hpp           -- Source enum, GeoRef, LatLon, SourcedTarget
+  geo.hpp               -- equirectangular local tangent-plane projection
+  adsb.hpp                -- CRC-24, DF17 bit layout, local CPR encode/decode
+  adsb_sim.hpp              -- simulated aircraft + real encode/decode round trip per tick
+  ais_sim.hpp                 -- simulated AIS-shaped vessel feed
+  scenario.hpp                  -- FusionScenario: merges radar + adsb_sim + ais_sim into one scan
+  cot.hpp                          -- Cursor-on-Target event struct + XML builder
+  link_sim.hpp                       -- DegradedLink: 64 kbps / 20%-loss / scheduled outage
+  store_forward.hpp                     -- StoreAndForwardSender (retry+ACK) + ReceiverLedger (GUID dedup)
+src/*.cpp               -- implementations matching the headers above, plus fusion_main.cpp (fusion_cli)
+tests/test_fusion_*.cpp   -- GoogleTest: adsb, geo, cot, link_sim, store_forward, scenario
+python_reference/
+  adsb_reference.py          -- independent from-scratch CRC-24/CPR cross-check against ground truth
+  cot_event.xsd                 -- this project's own CoT 2.0 event schema
+  validate_cot.py                  -- lxml schema validation + lat/lon range invariants
+  run_fusion_oracle_comparison.py     -- 120 fused scenarios through fusion_cli + the existing,
+                                         unmodified reference_tracker.py and radar_cli track
+```
+
+**Why `radar::TrackManager` needed zero changes.** A fused detection is
+still just an `(x, y)` pair in the same local tangent-plane meters the
+base tracker already associates in; the only thing that changed is *how*
+that pair was produced (a real decode round trip for ADS-B, a direct
+projection for AIS, nothing for radar). Keeping the tracker blind to
+source is also what makes the 120/120 oracle comparison below trivially
+reuse the existing, unmodified Python reference tracker and `radar_cli
+track`: a fused scan is indistinguishable from any other scan once it
+reaches either side.
+
+**Why local CPR decode instead of implementing the global even/odd
+pairing.** Global decode needs two frames (even and odd) arriving within
+10 seconds of each other with no ambiguity about which pairs with which;
+local decode needs one frame and a position already known to within about
+half a zone, which is exactly what a ground station tracking a bounded
+scenario area already has. Implementing the harder, more general
+algorithm here would not have exercised anything this project's claims
+need.
+
+**Why the store-and-forward sender retransmits on a fixed interval rather
+than an adaptive backoff.** A fixed 5-second retransmit interval is the
+simplest rule that is still honest about the duplicate-delivery risk an
+unacknowledged send carries; an adaptive backoff would reduce the
+duplicate count without changing what the mechanism is proving (that GUID
+dedup, not transport-level cleverness, is what makes 0 lost and 0
+duplicate-applied both true at once).
+
+### Validation
+
+- **GoogleTest suite:** 29 tests across 6 suites (Adsb, Geo, Cot, LinkSim,
+  ReceiverLedger/StoreAndForwardSender, FusionScenario), 0 failures, clean
+  under ASan+UBSan and ThreadSanitizer, including a live
+  `store-forward-soak` run under ASan+UBSan. `docs/fusion_test_output.txt`,
+  `docs/fusion_asan_ubsan_clean_run.txt`,
+  `docs/fusion_asan_ubsan_live_run.txt`, `docs/fusion_tsan_clean_run.txt`
+  (TSan under `setarch -R` per this repo's WSL2 ASLR requirement).
+- **Independent CRC-24/CPR cross-check against ground truth, not just
+  self-consistency:** `fusion_cli adsb-roundtrip-export` encodes 300
+  synthetic DF17 frames at known true positions within about 0.1 degree
+  (roughly 11km) of a fixed reference, the scale this decode mode is valid
+  at; `adsb_reference.py`, an independent from-scratch Python
+  re-implementation, decodes all 300 and compares against the true
+  position, not against the C++ side's own decoded output, so a bug
+  shared by both implementations would still show up: **300 of 300 CRCs
+  agreed and 300 of 300 decoded positions matched ground truth to within
+  1e-3 degree** (max observed error 0.0000974 degree, about 10.8m, well
+  inside CPR's own ~5m-to-tens-of-meters quantization budget).
+  `docs/fusion_adsb_crosscheck_output.txt`.
+- **120 seeded fused scenarios through the existing, unmodified oracle
+  comparison machinery:** `run_fusion_oracle_comparison.py` calls
+  `fusion_cli export-fused-scenario` (which genuinely runs the real radar
+  + ADS-B + AIS simulators and merges them) for 120 seeded three-feed
+  scenarios (3-8 total targets split randomly across the three feeds,
+  15-25 scans, seeds 2000-2119), then runs each through the base
+  tracker's own, completely unchanged `reference_tracker.py` and
+  `radar_cli track`: **120 of 120 agreed exactly** on track count and
+  identity per scan, 75 of which genuinely exercised all three feeds
+  together. `docs/fusion_oracle_comparison_output.txt`.
+- **CoT schema validation against a real XSD:** `fusion_cli publish-cot`
+  runs a fused scenario and writes one CoT event per confirmed track per
+  scan; `validate_cot.py` (lxml) validates every file against this
+  project's own CoT 2.0 XSD plus a latitude/longitude range invariant an
+  XSD's `xs:double` cannot express: **348 of 348 events schema-valid, 348
+  of 348 within [-90,90]/[-180,180].** `docs/fusion_cot_publish_output.txt`,
+  `docs/fusion_cot_schema_validation_output.txt`, one sample event at
+  `docs/fusion_sample_cot_event.cot`.
+- **Store-and-forward soak across a real scheduled outage:** see
+  "Measured results" below for the full numbers;
+  `docs/fusion_store_forward_soak_output.txt` is the raw run.
+
+### Findings
+
+**Boundary-reflection velocity reversals in the ADS-B and AIS target
+simulators cause real track churn over a long soak, and that is why the
+3,600-scan store-and-forward run shows 99 distinct ever-confirmed track
+ids from only 6 simulated targets.** When a simulated aircraft or vessel
+reaches the edge of its patch, its simulator reflects velocity with an
+instantaneous sign flip (the same boundary-handling style
+`DetectionSimulator` already uses for radar targets). A constant-velocity
+Kalman track has no way to know a reflection just happened and keeps
+predicting in the pre-reflection direction for a scan or two, which
+occasionally produces enough consecutive missed associations to trigger
+the 3-consecutive-miss deletion rule; the track is then re-spawned a scan
+or two later once the detection re-enters the gate. This does not affect
+the claims measured here (every enqueued message for every one of those
+99 track incarnations still arrived, 0 lost), but it is a real, measured
+property of this specific combination of simple kinematics and a
+constant-velocity-only filter, not a hypothetical one, and is disclosed
+rather than smoothed over by, for example, quietly lowering the
+simulators' speed or boundary-reflection frequency until the churn went
+away.
+
+**The store-and-forward design's duplicate-delivery risk is real, not
+theoretical, and the numbers show it.** Across the full soak, 5,475 of
+27,092 successful forward deliveries (about 20%) were re-deliveries of a
+message whose earlier, successful delivery's ACK had been lost, exactly
+the mechanism "Honest framing" above describes. The receiver's GUID dedup
+absorbed every one of them: `applied_count` (21,617) equals
+`total_messages_enqueued` (21,617) exactly, meaning 0 messages were ever
+double-counted despite genuinely being delivered more than once.
+
+### Measured results
+
+Machine: 8 physical / 16 logical cores, Windows 11 + WSL2 Ubuntu 22.04
+(capped 12 cores / 12GB RAM), g++ 11.4.0, `-O3` Release, Python 3.10.12.
+
+**The one number that matters: a 10-minute scheduled outage on a 64 kbps,
+20%-loss link produced 0 lost messages and 0 duplicate-applied messages
+at the receiver, across 21,617 real per-track-per-scan CoT updates over a
+3,600-scan (1-hour-equivalent) soak, despite 5,475 of those messages
+genuinely being delivered to the wire more than once.**
+
+| Metric | Value | Source |
+|---|---|---|
+| ADS-B CRC-24 + local CPR decode vs. independent Python, vs. ground truth | 300/300 CRC agree, 300/300 position within 1e-3 deg (max 0.0000974 deg, ~10.8m) | `docs/fusion_adsb_crosscheck_output.txt` |
+| Fused-scenario oracle agreement (3 feeds, 120 seeded scenarios) | 120/120 exact, 75/120 used all 3 feeds | `docs/fusion_oracle_comparison_output.txt` |
+| CoT schema validity | 348/348 schema-valid, 348/348 lat/lon in range | `docs/fusion_cot_schema_validation_output.txt` |
+| Store-and-forward: messages enqueued vs. applied | 21,617 enqueued, 21,617 applied, 0 lost | `docs/fusion_store_forward_soak_output.txt` |
+| Store-and-forward: duplicate deliveries caught by GUID dedup | 5,475 (0 double-applied) | `docs/fusion_store_forward_soak_output.txt` |
+| GoogleTest suite | 29/29, ASan+UBSan and TSan clean (incl. a live run) | `docs/fusion_test_output.txt`, `docs/fusion_asan_ubsan_clean_run.txt`, `docs/fusion_tsan_clean_run.txt` |
+
+### Building and running
+
+```
+# same build directory as the base tracker; new targets fusion_core,
+# fusion_cli and fusion_tests build alongside radar_cli and autolabel_cli
+cmake --build build -j6
+./build/fusion_tests
+
+# independent ADS-B CRC/CPR cross-check (300 frames)
+./build/fusion_cli adsb-roundtrip-export docs/fusion_adsb_frames.txt 300 7
+python3 python_reference/adsb_reference.py docs/fusion_adsb_frames.txt
+
+# 120-scenario fused oracle comparison (needs fusion_cli and radar_cli built)
+python3 python_reference/run_fusion_oracle_comparison.py \
+  --fusion-cli ./build/fusion_cli --radar-cli ./build/radar_cli \
+  --num-scenarios 120 --scenario-dir /tmp/fusion_scenarios \
+  --report docs/fusion_oracle_comparison_output.txt
+
+# publish CoT events from a fused scenario, then validate (needs lxml)
+./build/fusion_cli publish-cot /tmp/cot_out 60 2 2 2 5
+python3 python_reference/validate_cot.py /tmp/cot_out
+
+# store-and-forward soak: 3600 scans, a 600-scan (10-minute) outage
+# starting at scan 1200, 2 radar + 2 adsb + 2 ais targets
+./build/fusion_cli store-forward-soak 3600 1200 600 2 2 2 5
+
+# sanitizer builds (separate build dirs, same flags as the base tracker)
+cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -g"
+cmake --build build-asan -j6 fusion_tests fusion_cli
+build-asan/fusion_tests && build-asan/fusion_cli store-forward-soak 600 200 100 2 2 2 5
+cmake -S . -B build-tsan -DCMAKE_BUILD_TYPE=Debug -DENABLE_TSAN=ON -DCMAKE_CXX_FLAGS="-fsanitize=thread -fno-omit-frame-pointer -g"
+cmake --build build-tsan -j6 fusion_tests
+setarch -R build-tsan/fusion_tests
+```
+
 ## Sibling comparison
 
 [ground-truth-labeling-autolabeler-eval](https://github.com/Manas103/ground-truth-labeling-autolabeler-eval)
@@ -709,6 +963,21 @@ index's precision@10 against the same kind of proxy (0.8300 against a
 0.84 target, a near-exact match). Both repos report the honest number the
 proxy produces rather than tuning the proxy until the headline number
 looked better, which is the actual point of the shared pattern.
+
+[telemetry-ground-station](https://github.com/Manas103/telemetry-ground-station)'s
+own Mode S DF17 decoder and this extension's `adsb.hpp` decode the same
+message type from the same public specification, independently, and
+deliberately took different scopes. The sibling decodes a
+2,000,000-frame synthetic corpus for raw throughput (4.5M+ msgs/sec) and
+implements the full even/odd-paired, globally unambiguous CPR decode,
+because it has no fixed receiver position to assume. This extension
+implements the simpler local decode (one frame plus a known reference
+within about half a zone) because a fused tracker already has exactly
+that reference, and the claim under test is correctness and schema-valid
+downstream publishing, not throughput. Neither repo's CRC-24 or CPR
+implementation shares code with the other's; both were written from the
+same public algorithm and both validate the same way, round trip plus an
+independent re-implementation, not against externally captured RF.
 
 ## Limitations
 
@@ -749,3 +1018,22 @@ looked better, which is the actual point of the shared pattern.
   deliberately simple; a production similarity search over real driving
   logs would embed far richer kinematic and contextual signal than this
   project's synthetic kinematics provide.
+- Fusion extension: ADS-B frames are synthetically generated to the real
+  DF17 spec, not captured from a receiver; CPR decode is local (needs a
+  known reference position within about half a zone), not the globally
+  unambiguous even/odd-paired decode a receiver with no prior position
+  estimate would need.
+- Fusion extension: AIS is simulated with the fields a real report
+  carries, not a bit-level NMEA/AIS protocol encoding; all three feeds
+  synchronize to the radar's 1 Hz cadence rather than reporting
+  asynchronously the way real ADS-B and AIS do.
+- Fusion extension: the CoT XSD is authored by this project to match the
+  publicly documented CoT 2.0 structure, not the official TAK product
+  team's exact schema file, which is not on this machine.
+- Fusion extension: the equirectangular local tangent-plane projection is
+  honest only over the few-kilometer scenario areas this project uses.
+- Fusion extension: the store-and-forward soak's 99 distinct
+  ever-confirmed track ids (from 6 simulated targets) reflect real track
+  churn from boundary-reflection velocity reversals confusing the
+  constant-velocity Kalman filter, disclosed in "Findings" rather than
+  masked by softening the simulators until the churn disappeared.

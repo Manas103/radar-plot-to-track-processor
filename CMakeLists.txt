@@ -54,6 +54,22 @@ target_link_libraries(autolabel_core PUBLIC Threads::Threads)
 add_executable(autolabel_cli src/autolabel_main.cpp)
 target_link_libraries(autolabel_cli PRIVATE autolabel_core radar_core)
 
+add_library(fusion_core STATIC
+  src/geo.cpp
+  src/adsb.cpp
+  src/ais_sim.cpp
+  src/adsb_sim.cpp
+  src/scenario.cpp
+  src/cot.cpp
+  src/link_sim.cpp
+  src/store_forward.cpp
+)
+target_include_directories(fusion_core PUBLIC include)
+target_link_libraries(fusion_core PUBLIC radar_core Threads::Threads)
+
+add_executable(fusion_cli src/fusion_main.cpp)
+target_link_libraries(fusion_cli PRIVATE fusion_core radar_core)
+
 if(BUILD_TESTS)
   enable_testing()
   include(FetchContent)
@@ -83,6 +99,16 @@ if(BUILD_TESTS)
   )
   target_link_libraries(autolabel_tests PRIVATE autolabel_core gtest_main)
 
+  add_executable(fusion_tests
+    tests/test_fusion_adsb.cpp
+    tests/test_fusion_geo.cpp
+    tests/test_fusion_cot.cpp
+    tests/test_fusion_link_sim.cpp
+    tests/test_fusion_store_forward.cpp
+    tests/test_fusion_scenario.cpp
+  )
+  target_link_libraries(fusion_tests PRIVATE fusion_core radar_core gtest_main)
+
   include(GoogleTest)
   if(NOT ENABLE_TSAN)
     # Under ENABLE_TSAN, CMake's own test-discovery step (which runs the
@@ -92,8 +118,10 @@ if(BUILD_TESTS)
     # directly (with setarch -R) instead of through ctest.
     gtest_discover_tests(radar_tests)
     gtest_discover_tests(autolabel_tests)
+    gtest_discover_tests(fusion_tests)
   else()
     add_test(NAME radar_tests COMMAND radar_tests)
     add_test(NAME autolabel_tests COMMAND autolabel_tests)
+    add_test(NAME fusion_tests COMMAND fusion_tests)
   endif()
 endif()

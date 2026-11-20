@@ -1,0 +1,4 @@
+FUSION_ORACLE_COMPARISON: 120 of 120 fused scenarios agreed with the independent Python reference tracker on track count and identity per scan
+scenario total target counts: 3-8, scan lengths: 15-25, seeds: 2000..2119
+scenarios using all three sources: 75/120
+scenarios using radar only: 0/120

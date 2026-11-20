@@ -1,0 +1,4 @@
+total=300
+crc_agree=300/300
+position_agree=300/300
+max_err_deg=0.000097374

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Authored by this project to match the Cursor-on-Target 2.0 event schema's
+publicly documented structure (event/point/detail/contact/track); it is
+not the official TAK product team's exact XSD file, which is not on this
+machine. See README "Honest framing" for why this substitution is
+disclosed rather than silent.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="event">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="point">
+          <xs:complexType>
+            <xs:attribute name="lat" type="xs:double" use="required"/>
+            <xs:attribute name="lon" type="xs:double" use="required"/>
+            <xs:attribute name="hae" type="xs:double" use="required"/>
+            <xs:attribute name="ce" type="xs:double" use="required"/>
+            <xs:attribute name="le" type="xs:double" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="detail">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="contact">
+                <xs:complexType>
+                  <xs:attribute name="callsign" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="track">
+                <xs:complexType>
+                  <xs:attribute name="course" type="xs:double" use="required"/>
+                  <xs:attribute name="speed" type="xs:double" use="required"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="remarks" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" use="required"/>
+      <xs:attribute name="uid" type="xs:string" use="required"/>
+      <xs:attribute name="type" type="xs:string" use="required"/>
+      <xs:attribute name="time" type="xs:dateTime" use="required"/>
+      <xs:attribute name="start" type="xs:dateTime" use="required"/>
+      <xs:attribute name="stale" type="xs:dateTime" use="required"/>
+      <xs:attribute name="how" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
